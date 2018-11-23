@@ -8,36 +8,64 @@ import { Component, OnInit } from '@angular/core';
 export class LoginComponent implements OnInit {
   loading: boolean;
   credential: any;
-  self: any;
+  showCredential: boolean;
   done: boolean;
+  schema: any;
+
+
   constructor() { }
 
   ngOnInit() {  }
 
-  // this.login() = async () => {
-  // 	self = this;
-  //   this.loading = true;
-  //   try {
-  //     this.credential = await navigator.credentials.get({
-  //       web: {
-  //         VerifiableProfile: {
-  //           '@context': {
-  //             'br': 'urn:bedrock:',
-  //             'cred': 'https://w3id.org/credentials#'
-  //           },
-  //           'br:test:passport': {'cred:isOptional': true}
-  //         }
-  //       }
-  //     });
-  //     console.log('credential received by verifier', this.credential);
-  //     if(this.credential) {
-  //       this.done = true;
-  //     }
-  //   } catch(e: any) {
-  //     console.error(e);
-  //   }
-  //   this.loading = false;
-  // };
+  
+async login() {
+
+    let navigatorV = (window.navigator as any);
+    let dataV = (window as any);
+    let credential;
+    console.log(dataV);
+      this.loading = true;
+      try {
+        credential = await navigatorV.credentials.get({
+          web: {
+            VerifiablePresentation: {
+              query: {
+                type: 'queryByExample',
+                value: {
+                  id: '',
+                  type: 'ex:FdaInspectioncd'
+                }
+              }
+            }
+          }
+        });
+        console.log(credential);
+        if(credential) {
+        	console.log("wE MADE IT  to this part");
+         	this.credential = credential.data.credential[0];
+         	this.done = true;
+         }
+      } finally {
+        this.loading = false;
+
+      }
+    
+ //    const MEDIATOR_ORIGIN = dataV['authorization-io'].baseUri;
+
+	// let loadPolyfillPromise = polyfill.loadOnce(
+	//   MEDIATOR_ORIGIN + '/mediator?origin=' +
+	//   encodeURIComponent(window.location.origin));
+
+  }
+
+
+
+  reset() {
+      this.done = false;
+      this.loading = false;
+      this.credential = null;
+      this.showCredential = false;
+  }
   
 
 }
