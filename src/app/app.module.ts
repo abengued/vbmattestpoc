@@ -7,10 +7,10 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { SecureLandingComponent } from './secure-landing/secure-landing.component';
 import * as polyfill from 'credential-handler-polyfill';
-import * as didIO  from 'did-io';
-import * as jsonLD  from 'jsonld';
-import * as jsonLDSignatures  from 'jsonld-signatures';
-import * as bedrock from 'bedrock-angular';
+// import * as didIO  from 'did-io';
+// import * as jsonLD  from 'jsonld';
+// import * as jsonLDSignatures  from 'jsonld-signatures';
+// import * as bedrock from 'bedrock-angular';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,7 @@ import * as bedrock from 'bedrock-angular';
   ],
   providers: [
     // polyfill,
-    // didIO,
+    // didIO
     // jsonLD,
     // jsonLDSignatures,
     // bedrock

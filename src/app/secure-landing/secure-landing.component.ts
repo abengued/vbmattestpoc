@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ProfileService } from '../profile.service';
 
 @Component({
   selector: 'app-secure-landing',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SecureLandingComponent implements OnInit {
 
-  constructor() { }
+  constructor(public profileService: ProfileService) { }
+
+  userProfile: any;
 
   ngOnInit() {
+  	this.userProfile = this.profileService.getProfile();
+  	console.log('landing page profile. DONE', this.userProfile);
   }
 
 }
