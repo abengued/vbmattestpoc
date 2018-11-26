@@ -27,6 +27,7 @@
     "jsonld": "^1.1.0",
     "jsonld-signatures": "^2.3.1",
     "lodash": "^4.17.11",
+    "rdf-canonize": "^0.3.0",
     "requirejs": "^2.3.6",
     "rxjs": "~6.3.3",
     "zone.js": "~0.8.26"
