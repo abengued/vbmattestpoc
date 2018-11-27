@@ -14,7 +14,7 @@ export class SecureLandingComponent implements OnInit {
 
   ngOnInit() {
   	this.userProfile = this.profileService.getProfile();
-  	console.log('landing page profile. DONE', this.userProfile);
+  	// console.log('landing page profile. DONE', this.userProfile);
   }
 
 }

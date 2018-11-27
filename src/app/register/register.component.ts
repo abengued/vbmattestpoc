@@ -13,7 +13,7 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-  	window.location.href = 'https://wallet.attest.network/supplier-portal';
+  	window.location.href = 'https://wallet.attest.network/vbm-registration';
   }
 
 }
