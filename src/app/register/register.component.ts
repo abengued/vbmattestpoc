@@ -11,7 +11,7 @@ export class RegisterComponent implements OnInit {
   
   ngOnInit() {
   }
-
+  // TBD iframe or browser - how to close
   register() {
   	window.location.href = 'https://wallet.attest.network/vbm-registration';
   }

@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
+import {DataTableModule} from "angular-6-datatable";
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -21,7 +23,9 @@ import * as polyfill from 'credential-handler-polyfill';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    DataTableModule
+    
   ],
   providers: [
     // polyfill,
@@ -34,7 +38,6 @@ import * as polyfill from 'credential-handler-polyfill';
 })
 export class AppModule { 
   ngOnInit() {
-    // bedrock.setRootModule(this);
   }
 
 }

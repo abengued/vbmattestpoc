@@ -73,18 +73,22 @@ async login() {
          	this.credential = credential.data.credential[0];
          	this.done = true;
 
+                // this.credential = this.credentialObj(null);
+
+          this.profileService.setProfile(this.credential);
+
          	// this.verifySig()
          }
       } finally {
-        this.loading = false;
-
+        this.router.navigate(['/vbm']);
       }
       // need to use a different public key
-      let pubkey = "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxRnOWv7MXkWqycjYoRAn\r\nJEpY2T2Mim8FzLV4yWPoNDGwuJv61d8LvRJ9IfNc7/L1S4fw4InyDOBHKFt6fEFH\r\nKp2fSVDJGpVQrAQT+WADQ1qGYOk6iQraVbMPGOklrQAAIhtfWtVCi4BfmLZwV6rO\r\nHvREhqlu/Q+WOpPDXHJo1pGCw4oOMXbmqnH2L4P6duGvlkmJ+Vgg44O3WhRZWEH5\r\nFsQWz5qNmt6hrm479i31hugjQ8iq4dlzWtGv+mGflpmXZvvlpgjghykMsxEyV7GC\r\nLytdKY1BsoP7ZD6+4182WShutuDGKUn4/ypgkUK9EGo6LIwR6xs01jOhdBR/g8jh\r\nxQIDAQAB\r\n-----END PUBLIC KEY-----\r\n";
-      // this.credential = this.credentialObj(null);
-      console.log('test credential', JSON.stringify(this.credential));
-      console.log('VERIFY:', this.verifySig(this.credential.proof.jws, pubkey, this.credential.proof.creator));
-      this.profileService.setProfile(this.credential);
+      // let pubkey = "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxRnOWv7MXkWqycjYoRAn\r\nJEpY2T2Mim8FzLV4yWPoNDGwuJv61d8LvRJ9IfNc7/L1S4fw4InyDOBHKFt6fEFH\r\nKp2fSVDJGpVQrAQT+WADQ1qGYOk6iQraVbMPGOklrQAAIhtfWtVCi4BfmLZwV6rO\r\nHvREhqlu/Q+WOpPDXHJo1pGCw4oOMXbmqnH2L4P6duGvlkmJ+Vgg44O3WhRZWEH5\r\nFsQWz5qNmt6hrm479i31hugjQ8iq4dlzWtGv+mGflpmXZvvlpgjghykMsxEyV7GC\r\nLytdKY1BsoP7ZD6+4182WShutuDGKUn4/ypgkUK9EGo6LIwR6xs01jOhdBR/g8jh\r\nxQIDAQAB\r\n-----END PUBLIC KEY-----\r\n";
+      // // this.credential = this.credentialObj(null);
+      // console.log('test credential', JSON.stringify(this.credential));
+      // console.log('VERIFY:', this.verifySig(this.credential.proof.jws, pubkey, this.credential.proof.creator));
+      
+
       this.router.navigate(['/vbm']);
 
   }
