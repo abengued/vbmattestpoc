@@ -25,9 +25,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": [
-              
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -133,5 +131,8 @@
       }
     }
   },
-  "defaultProject": "vbm-attest-poc"
+  "defaultProject": "vbm-attest-poc",
+  "cli": {
+    "defaultCollection": "@nativescript/schematics"
+  }
 }

@@ -1,15 +1,43 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+
 declare function require(name: string);
-// var jsonld = require('jsonld');
-import * as jsonld from 'jsonld';
-import * as jsig from 'jsonld-signatures';
+
 import { ProfileService } from '../profile.service';
-// var jsig = require('jsonld-signatures');
+
 // var dids = require('did-io');
+// var VeresOne = require('did-io/lib/methods/veres-one/veres-one');
+
+// var v1 = dids.methods.veres({ mode: 'test' });
+
+var Injector = require('did-io/lib/Injector');
+var injector = new Injector();
+
+var jsonld = injector.use('jsonld');
+var documentLoader = jsonld.documentLoader;
 
 var polyfill = require('credential-handler-polyfill');
+
+// jsonld.documentLoader = async url => {
+//   if(url in VeresOne.contexts) {
+//     return {
+//       contextUrl: null,
+//       documentUrl: url,
+//       document: VeresOne.contexts[url]
+//     };
+//   }
+//   return documentLoader(url);
+// };
+
+injector.use('jsonld', jsonld);
+var jsigs = require('jsonld-signatures');
+jsigs.use('jsonld', jsonld);
+// var eproofs = require('equihash-signature');
+// eproofs.install(jsigs);
+injector.use('jsonld-signatures', jsigs);
+injector.env = {nodejs: true};
+// v1.injector = injector;
 
 @Component({
   selector: 'app-login',
@@ -22,19 +50,15 @@ export class LoginComponent implements OnInit {
   showCredential: boolean;
   done: boolean;
   schema: any;
+  
 
 
   constructor(public router: Router, 
   				public profileService : ProfileService) {
-  	jsig.use('jsonld', jsonld);
 
   }
 
   ngOnInit() { 
-  	// jsig.use('jsonld', jsonld);
-
-  	console.log('jsonld', jsonld);
-  	console.log('jsig', jsig); 
   }
 
 
@@ -82,30 +106,12 @@ async login() {
       } finally {
         this.router.navigate(['/vbm']);
       }
-      // need to use a different public key
-      // let pubkey = "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxRnOWv7MXkWqycjYoRAn\r\nJEpY2T2Mim8FzLV4yWPoNDGwuJv61d8LvRJ9IfNc7/L1S4fw4InyDOBHKFt6fEFH\r\nKp2fSVDJGpVQrAQT+WADQ1qGYOk6iQraVbMPGOklrQAAIhtfWtVCi4BfmLZwV6rO\r\nHvREhqlu/Q+WOpPDXHJo1pGCw4oOMXbmqnH2L4P6duGvlkmJ+Vgg44O3WhRZWEH5\r\nFsQWz5qNmt6hrm479i31hugjQ8iq4dlzWtGv+mGflpmXZvvlpgjghykMsxEyV7GC\r\nLytdKY1BsoP7ZD6+4182WShutuDGKUn4/ypgkUK9EGo6LIwR6xs01jOhdBR/g8jh\r\nxQIDAQAB\r\n-----END PUBLIC KEY-----\r\n";
-      // // this.credential = this.credentialObj(null);
-      // console.log('test credential', JSON.stringify(this.credential));
-      // console.log('VERIFY:', this.verifySig(this.credential.proof.jws, pubkey, this.credential.proof.creator));
-      
 
       this.router.navigate(['/vbm']);
 
   }
 
- verifySig(signedDocument: any, publicKey: string, publicKeyOwner: string) {
 
-	jsig.verify(signedDocument, {
-	    publicKey: publicKey,
-	    publicKeyOwner: publicKeyOwner,
-	  }, function(err, verified) {
-	    if(err) {
-	      return console.log('Signature verification error:', err);
-	    }
-	    console.log('Signature is valid:', verified);
-	  });
-
-}
  
 
   reset() {
