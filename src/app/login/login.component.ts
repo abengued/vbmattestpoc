@@ -119,8 +119,8 @@ async login() {
         console.log('BASE58', this.credential.proof.creator.split(":")[4].split("#")[0]);
         console.log('DOCUMENT', this.credential.proof.jws);
         console.log('CREATOR', this.credential.proof.creator);
-        let verificationResult = this.verifySig(this.credential.proof.jws, this.credential.proof.creator.split(":")[4].split("#")[0], this.credential.proof.creator);
-
+        let verificationResult = this.verifySig(this.credential, this.credential.proof.creator.split(":")[4].split("#")[0], this.credential.proof.creator);
+                
         console.log('VERIFY:', verificationResult);
 
         this.credential.verified = verificationResult;
@@ -135,10 +135,7 @@ async login() {
 
    verifySig(signedDocument: any, publicKey: string, publicKeyOwner: string) {
    
-    jsig.verify(signedDocument, {
-        publicKey: publicKey,
-        publicKeyOwner: publicKeyOwner
-      }, function(err, verified) {
+    jsig.verify(signedDocument, function(err, verified) {
         if(err) {
           console.log('VALIDATION FAILED', err);
           return err;
