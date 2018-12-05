@@ -6,6 +6,31 @@ declare function require(name: string);
 
 import { ProfileService } from '../profile.service';
 
+var jsonld = require('jsonld');
+import * as jsonld from 'jsonld';
+import * as jsig from 'jsonld-signatures';
+
+var jsig = require('jsonld-signatures');
+                // setup mock document loader
+        var mockDocuments = {
+          'did:v1:test:...': {/*the DID document*/},
+          'did:v1:test:...#some-key': {/* the key document */}
+        };
+
+        var oldLoader = jsonld.documentLoader;
+        jsonld.documentLoader = async url => {
+          if(url in mockDocuments) {
+            return {
+              contextUrl: null,
+              document: mockDocuments[url],
+              documentUrl: url
+            };
+          }
+          return oldLoader(url);
+        };
+
+
+
 // var dids = require('did-io');
 // var VeresOne = require('did-io/lib/methods/veres-one/veres-one');
 
@@ -14,8 +39,8 @@ import { ProfileService } from '../profile.service';
 var Injector = require('did-io/lib/Injector');
 var injector = new Injector();
 
-var jsonld = injector.use('jsonld');
-var documentLoader = jsonld.documentLoader;
+// var jsonld = injector.use('jsonld');
+// var documentLoader = jsonld.documentLoader;
 
 var polyfill = require('credential-handler-polyfill');
 
@@ -31,12 +56,12 @@ var polyfill = require('credential-handler-polyfill');
 // };
 
 injector.use('jsonld', jsonld);
-var jsigs = require('jsonld-signatures');
-jsigs.use('jsonld', jsonld);
+var jsig = require('jsonld-signatures');
+jsig.use('jsonld', jsonld);
 // var eproofs = require('equihash-signature');
 // eproofs.install(jsigs);
-injector.use('jsonld-signatures', jsigs);
-injector.env = {nodejs: true};
+injector.use('jsonld-signatures', jsig);
+injector.env = {nodejs: false};
 // v1.injector = injector;
 
 @Component({
@@ -104,6 +129,17 @@ async login() {
          	// this.verifySig()
          }
       } finally {
+        
+
+
+
+        console.log('test credential', JSON.stringify(this.credential));
+        console.log('BASE58', this.credential.proof.creator.split(":")[4].split("#")[0]);
+        console.log('DOCUMENT', this.credential.proof.jws);
+        console.log('CREATOR', this.credential.proof.creator);
+
+        console.log('VERIFY:', this.verifySig(this.credential.proof.jws, this.credential.proof.creator.split(":")[4].split("#")[0], this.credential.proof.creator));
+        this.profileService.setProfile(this.credential);
         this.router.navigate(['/vbm']);
       }
 
@@ -111,6 +147,21 @@ async login() {
 
   }
 
+   verifySig(signedDocument: any, publicKey: string, publicKeyOwner: string) {
+   
+    jsig.verify(signedDocument, {
+        publicKey: publicKey,
+        publicKeyOwner: publicKeyOwner
+      }, function(err, verified) {
+        if(err) {
+          console.log('VALIDATION FAILED', err);
+
+        }
+        console.log('VALIDATION SUCCEEDED', verified);
+
+      });
+
+  }
 
  
 
