@@ -3,10 +3,6 @@ import { Router } from '@angular/router';
 
 declare function require(name: string);
 
-// var didDoc = require('./documents.json');
-
-
-
 import { ProfileService } from '../services/profile.service';
 import { MocdocService } from '../services/mocdoc.service';
 
@@ -17,18 +13,12 @@ import * as jsig from 'jsonld-signatures';
   var jsig = require('jsonld-signatures');
 
 
-var Injector = require('did-io/lib/Injector');
-var injector = new Injector();
-
 
 var polyfill = require('credential-handler-polyfill');
 
 
-injector.use('jsonld', jsonld);
 var jsig = require('jsonld-signatures');
 jsig.use('jsonld', jsonld);
-injector.use('jsonld-signatures', jsig);
-injector.env = {nodejs: false};
 
 @Component({
   selector: 'app-login',
@@ -138,17 +128,17 @@ async login() {
     jsig.verify(signedDocument, function(err, verified) {
         console.log(JSON.stringify(signedDocument, null, 2));
         if(err) {
-          console.log('VALIDATION FAILED', err);
           return err;
-
+          console.log('JSONLD ERROR: ', err);
         }
-        console.log('VALIDATION SUCCEEDED', verified);
+        if(verified == true) {
+          console.log('VALIDATION SUCCEEDED', verified);
 
+        } else {
+          console.log('VALIDATION FAILED', verified);
+        }
       });
-
   }
-
-
 
   reset() {
       this.done = false;
@@ -156,8 +146,6 @@ async login() {
       this.credential = null;
       this.showCredential = false;
   }
-
-
 
 
 }
