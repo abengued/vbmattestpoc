@@ -43,10 +43,10 @@ export class LoginComponent implements OnInit {
   schema: any;
   mockDocuments: any;
 
-  
 
 
-  constructor(public router: Router, 
+
+  constructor(public router: Router,
   				public profileService : ProfileService, public mocdocService : MocdocService) {
 
           var mockDocuments = mocdocService.getMocDoc();
@@ -68,12 +68,12 @@ export class LoginComponent implements OnInit {
 
   }
 
-  ngOnInit() { 
+  ngOnInit() {
   }
 
 
 async login() {
-	 
+
 
     let navigatorV = (window.navigator as any);
     let credential;
@@ -111,7 +111,7 @@ async login() {
 
          }
       } finally {
-        
+
 
 
 
@@ -120,7 +120,7 @@ async login() {
         console.log('DOCUMENT', this.credential.proof.jws);
         console.log('CREATOR', this.credential.proof.creator);
         let verificationResult = this.verifySig(this.credential, this.credential.proof.creator.split(":")[4].split("#")[0], this.credential.proof.creator);
-                
+
         console.log('VERIFY:', verificationResult);
 
         this.credential.verified = verificationResult;
@@ -134,8 +134,9 @@ async login() {
   }
 
    verifySig(signedDocument: any, publicKey: string, publicKeyOwner: string) {
-   
+
     jsig.verify(signedDocument, function(err, verified) {
+        console.log(JSON.stringify(signedDocument, null, 2));
         if(err) {
           console.log('VALIDATION FAILED', err);
           return err;
@@ -147,7 +148,7 @@ async login() {
 
   }
 
- 
+
 
   reset() {
       this.done = false;
@@ -155,8 +156,8 @@ async login() {
       this.credential = null;
       this.showCredential = false;
   }
-  
-  
+
+
 
 
 }
