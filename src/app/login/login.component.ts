@@ -10,12 +10,9 @@ var jsonld = require('jsonld');
 import * as jsonld from 'jsonld';
 import * as jsig from 'jsonld-signatures';
 
-  var jsig = require('jsonld-signatures');
-
-
+var jsig = require('jsonld-signatures');
 
 var polyfill = require('credential-handler-polyfill');
-
 
 var jsig = require('jsonld-signatures');
 jsig.use('jsonld', jsonld);
@@ -32,9 +29,7 @@ export class LoginComponent implements OnInit {
   done: boolean;
   schema: any;
   mockDocuments: any;
-
-
-
+  verfied: any;
 
   constructor(public router: Router,
   				public profileService : ProfileService, public mocdocService : MocdocService) {
@@ -90,53 +85,43 @@ async login() {
             }
           }
         });
-        console.log(credential);
 
         if(credential) {
-        	console.log("wE MADE IT  to this part");
          	this.credential = credential.data.credential[0];
-         	this.done = true;
+          this.credential = JSON.parse(JSON.stringify(this.credential).replace(/https/gi, "http"));
+
+          console.log(credential);
 
           this.profileService.setProfile(this.credential);
-
+         } else {
+          alert('Unable to login. Please sign up!');
+          this.router.navigate(['/register']);
          }
+
       } finally {
 
+        // console.log('test credential', JSON.stringify(this.credential));
+        // console.log('BASE58', this.credential.proof.creator.split(":")[4].split("#")[0]);
+        // console.log('DOCUMENT', this.credential.proof.jws);
+        // console.log('CREATOR', this.credential.proof.creator);
+        this.verifySig(this.credential, this.credential.proof.creator.split(":")[4].split("#")[0], this.credential.proof.creator);
 
-
-
-        console.log('test credential', JSON.stringify(this.credential));
-        console.log('BASE58', this.credential.proof.creator.split(":")[4].split("#")[0]);
-        console.log('DOCUMENT', this.credential.proof.jws);
-        console.log('CREATOR', this.credential.proof.creator);
-        let verificationResult = this.verifySig(this.credential, this.credential.proof.creator.split(":")[4].split("#")[0], this.credential.proof.creator);
-
-        console.log('VERIFY:', verificationResult);
-
-        this.credential.verified = verificationResult;
         this.profileService.setProfile(this.credential);
+
         this.router.navigate(['/vbm']);
 
       }
 
-      this.router.navigate(['/vbm']);
-
   }
 
    verifySig(signedDocument: any, publicKey: string, publicKeyOwner: string) {
-
     jsig.verify(signedDocument, function(err, verified) {
-        console.log(JSON.stringify(signedDocument, null, 2));
         if(err) {
           return err;
           console.log('JSONLD ERROR: ', err);
         }
-        if(verified == true) {
-          console.log('VALIDATION SUCCEEDED', verified);
-
-        } else {
-          console.log('VALIDATION FAILED', verified);
-        }
+        this.credential.signatureVerify = verified;
+        console.log('credential accessed', this.credential);
       });
   }
 

@@ -20,7 +20,7 @@ export class MocdocService {
   
     let value =
     {
-      "@context": "https://w3id.org/veres-one/v1",
+      "@context": "http://w3id.org/veres-one/v1",
       "id": "did:v1:test:nym:172J_1WppTrk7RrpSa7W9v3Rtz8FJTXz-kOVn975-Ok",
       "authentication": [{
         "type": "RsaSignatureAuthentication2018",

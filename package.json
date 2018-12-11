@@ -30,6 +30,7 @@
     "credential-handler-polyfill": "^1.0.4",
     "did-client": "^0.3.2",
     "did-io": "^0.7.0",
+    "equihash-signature": "digitalbazaar/equihash-signature#master",
     "express": "^4.16.4",
     "font-awesome": "^4.7.0",
     "jsonld": "^1.1.0",
@@ -45,7 +46,6 @@
     "rxjs": "~6.3.3",
     "serve-favicon": "^2.5.0",
     "tns-core-modules": "~5.0.0",
-    "equihash-signature": "digitalbazaar/equihash-signature#master",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
