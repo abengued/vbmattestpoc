@@ -1,21 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import * as dids from 'did-io';
+
 declare function require(name: string);
-
-import { ProfileService } from '../services/profile.service';
-import { MocdocService } from '../services/mocdoc.service';
-
-var jsonld = require('jsonld');
+// var jsonld = require('jsonld');
 import * as jsonld from 'jsonld';
 import * as jsig from 'jsonld-signatures';
-
-var jsig = require('jsonld-signatures');
+import { ProfileService } from '../services/profile.service';
+// var jsig = require('jsonld-signatures');
+// var dids = require('did-io');
 
 var polyfill = require('credential-handler-polyfill');
-
-var jsig = require('jsonld-signatures');
-jsig.use('jsonld', jsonld);
 
 @Component({
   selector: 'app-login',
@@ -28,32 +24,23 @@ export class LoginComponent implements OnInit {
   showCredential: boolean;
   done: boolean;
   schema: any;
-  mockDocuments: any;
-  verfied: any;
+  v1: any;
 
-  constructor(public router: Router,
-  				public profileService : ProfileService, public mocdocService : MocdocService) {
 
-          var mockDocuments = mocdocService.getMocDoc();
+  constructor(public router: Router, 
+  				public profileService : ProfileService) {
+  	// jsig.use('jsonld', jsonld);
 
-          console.log("MOCK DID DOCUMENT", mockDocuments);
-
-          var oldLoader = jsonld.documentLoader;
-
-          jsonld.documentLoader = async url => {
-            if(url in mockDocuments) {
-              return {
-                contextUrl: null,
-                document: mockDocuments[url],
-                documentUrl: url
-              };
-            }
-            return oldLoader(url);
-          };
+    this.login();
+    // this.v1 = dids.methods.veres({ mode: 'test' });
 
   }
 
-  ngOnInit() {
+  ngOnInit() { 
+  	// jsig.use('jsonld', jsonld);
+
+  	console.log('jsonld', jsonld);
+  	console.log('jsig', jsig); 
   }
 
 
@@ -85,45 +72,52 @@ async login() {
             }
           }
         });
+        console.log(credential);
 
         if(credential) {
+        	console.log("We made it to this part");
          	this.credential = credential.data.credential[0];
-          this.credential = JSON.parse(JSON.stringify(this.credential).replace(/https/gi, "http"));
+         	this.done = true;
 
-          console.log(credential);
+                // this.credential = this.credentialObj(null);
 
           this.profileService.setProfile(this.credential);
-         } else {
-          alert('Unable to login. Please sign up!');
-          this.router.navigate(['/register']);
+
+         	// this.verifySig()
          }
-
       } finally {
-
-        // console.log('test credential', JSON.stringify(this.credential));
-        // console.log('BASE58', this.credential.proof.creator.split(":")[4].split("#")[0]);
-        // console.log('DOCUMENT', this.credential.proof.jws);
-        // console.log('CREATOR', this.credential.proof.creator);
-        this.verifySig(this.credential, this.credential.proof.creator.split(":")[4].split("#")[0], this.credential.proof.creator);
-
-        this.profileService.setProfile(this.credential);
-
         this.router.navigate(['/vbm']);
-
       }
+      // // need to use a different public key
+      // let pubkey = "-----BEGIN PUBLIC KEY-----\r\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxRnOWv7MXkWqycjYoRAn\r\nJEpY2T2Mim8FzLV4yWPoNDGwuJv61d8LvRJ9IfNc7/L1S4fw4InyDOBHKFt6fEFH\r\nKp2fSVDJGpVQrAQT+WADQ1qGYOk6iQraVbMPGOklrQAAIhtfWtVCi4BfmLZwV6rO\r\nHvREhqlu/Q+WOpPDXHJo1pGCw4oOMXbmqnH2L4P6duGvlkmJ+Vgg44O3WhRZWEH5\r\nFsQWz5qNmt6hrm479i31hugjQ8iq4dlzWtGv+mGflpmXZvvlpgjghykMsxEyV7GC\r\nLytdKY1BsoP7ZD6+4182WShutuDGKUn4/ypgkUK9EGo6LIwR6xs01jOhdBR/g8jh\r\nxQIDAQAB\r\n-----END PUBLIC KEY-----\r\n";
+      // this.credential = this.credentialObj(null);
+      // console.log('test credential', JSON.stringify(this.credential));
+      // console.log('VERIFY:', this.verifySig(this.credential.proof.jws, pubkey, this.credential.proof.creator));
+      
+      // const did = 'did:v1:test:nym:ApvL3PKAzQvFnRVqyZKhSYD2i8XcsLG1Dy4FrSdEKAdR';
+       
+      // dids.get({ did })
+      //   .then(didDoc => { console.log(JSON.stringify(didDoc, null, 2)); })
+      //   .catch(console.error);
+
+      this.router.navigate(['/vbm']);
 
   }
 
-   verifySig(signedDocument: any, publicKey: string, publicKeyOwner: string) {
-    jsig.verify(signedDocument, function(err, verified) {
-        if(err) {
-          return err;
-          console.log('JSONLD ERROR: ', err);
-        }
-        this.credential.signatureVerify = verified;
-        console.log('credential accessed', this.credential);
-      });
-  }
+ verifySig(signedDocument: any, publicKey: string, publicKeyOwner: string) {
+
+	jsig.verify(signedDocument, {
+	    publicKey: publicKey,
+	    publicKeyOwner: publicKeyOwner,
+	  }, function(err, verified) {
+	    if(err) {
+	      return console.log('Signature verification error:', err);
+	    }
+	    console.log('Signature is valid:', verified);
+	  });
+
+}
+
 
   reset() {
       this.done = false;
@@ -131,6 +125,12 @@ async login() {
       this.credential = null;
       this.showCredential = false;
   }
+  
+  credentialObj(cred: any) {
+ 	// need to add verifiable presentation rather than verifiable credential 	
+  	return JSON.parse('{\"@context":[{"@version":1.1},"https://w3id.org/credentials/v1",{"credentialName":"cr:credentialName","credentialDescription":"cr:credentialDescription","stateAuthority":"vbm:stateAuthority","localAuthority":"vbm:localAuthority","precinct":"vbm:precinct","voterRegistrationNumber":"vbm:voterRegistrationNumber","name":"vbm:name","voteByMailRegistration":"vbm:voteByMailRegistration"},"https://w3id.org/security/v2"],"id":"urn:uuid:1111048f-0ecf-4b5b-872c-aaad5222d0ad","type":["VerifiableCredential","voteByMailCredential"],"issuer":"did:v1:test:nym:eJPSftfsFUGUxPGnVecOXhXobK23nBbJ2jhuj75ok-U","issued":"2018-10-01T19:73:24Z","credentialName":"Vote By Mail Access Credential","credentialDescription":"Log in to the USPS Vote by Mail App with this Credential","claim":{"id":"did:v1:test:nym:172J_1WppTrk7RrpSa7W9v3Rtz8FJTXz-kOVn975-Ok","stateAuthority":"Colorado Secretary of State","localAuthority":"Denver County","precinct":"028","voterRegistrationNumber":"124P5579","name":"Cab Morris","voteByMailRegistration":true},"proof":{"type":"RsaSignature2018","created":"2018-11-20T23:36:28Z","creator":"did:v1:test:nym:eJPSftfsFUGUxPGnVecOXhXobK23nBbJ2jhuj75ok-U#authn-key-1","domain":"http://www.sos.state.co.us/pubs/elections/UOCAVA.html","jws":"eyJhbGciOiJQUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..objjT3S9qk8fJNiDUNTCGfi1YibK6VdEc_Fl1x4NvFg9YGTevF2ae7msgmDNMzj6vevUxr_mkxE4a5jdIBruDeKkWMper6oVvETX0Htih2qAO8FnYbYEfjO9w7UY8mvNobJVC-q2D_kmgT-f-FGV1RHvwol6X_lNr5zAKWBHeHFF-sVpSaBI2L1KGl0dRKNyZZmVmu0XIou5LMw1UhaWEVqOnWeooFOtRITEQIEAYjuPHKYD9_l4Z5H0kYcYwMzpTa0GoGl1w3NKBGXbDdS5oxOLeDvbfeD21d19XPaXt9mNyQHH-UWm9xOJoYVvt0QiqPPBgBZIuJVTg2Mi12d4Ug","nonce":"9dc7fd85"}}');
+  }
+
 
 
 }
